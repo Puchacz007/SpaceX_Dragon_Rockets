@@ -14,6 +14,7 @@ import java.util.List;
 public class Mission extends EntityId {
     private String name;
     private MissionStatus status;
+    @EqualsAndHashCode.Exclude
     private List<Rocket> rockets = new ArrayList<>();
 
     public Mission(String name) {

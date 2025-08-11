@@ -1,8 +1,10 @@
 package six.rockets;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import six.rockets.Exception.RocketException;
@@ -16,21 +18,17 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class MissionPlanningServiceTest {
 
     @Mock
-    private static RocketService rocketService;
+    private RocketService rocketService;
     @Mock
-    private static MissionService missionService;
-    private static MissionPlanningService missionPlanningService;
-
-    @BeforeAll
-    public static void setup() {
-        missionPlanningService = new MissionPlanningServiceImpl(rocketService, missionService);
-    }
+    private MissionService missionService;
+    @InjectMocks
+    private MissionPlanningServiceImpl missionPlanningService;
 
     @Test
     public void assignSingleRocketToMissionTest() {
@@ -39,10 +37,12 @@ public class MissionPlanningServiceTest {
 
         missionPlanningService.assignRocketsToMission(mission, rocket);
 
+        verify(missionService).changeMissionStatus(mission.getId(), MissionStatus.IN_PROGRESS);
+
+        verify(rocketService).changeRocketStatus(rocket.getId(), RocketStatus.IN_SPACE);
+
         assertEquals(1, mission.getRockets().size());
         assertEquals(rocket, mission.getRockets().get(0));
-        assertEquals(RocketStatus.IN_SPACE, mission.getRockets().get(0).getStatus());
-        assertEquals(MissionStatus.IN_PROGRESS, mission.getStatus());
     }
 
     @Test
@@ -55,10 +55,13 @@ public class MissionPlanningServiceTest {
 
         assertEquals(2, mission.getRockets().size());
         assertEquals(rocket1, mission.getRockets().get(0));
-        assertEquals(rocket1, mission.getRockets().get(1));
-        assertEquals(RocketStatus.IN_SPACE, mission.getRockets().get(0).getStatus());
-        assertEquals(RocketStatus.IN_SPACE, mission.getRockets().get(1).getStatus());
-        assertEquals(MissionStatus.IN_PROGRESS, mission.getStatus());
+        assertEquals(rocket2, mission.getRockets().get(1));
+
+        verify(missionService, times(2)).changeMissionStatus(mission.getId(), MissionStatus.IN_PROGRESS);
+
+        verify(rocketService).changeRocketStatus(rocket1.getId(), RocketStatus.IN_SPACE);
+        verify(rocketService).changeRocketStatus(rocket2.getId(), RocketStatus.IN_SPACE);
+
     }
 
     @Test
@@ -71,10 +74,13 @@ public class MissionPlanningServiceTest {
 
         assertEquals(2, mission.getRockets().size());
         assertEquals(rocket1, mission.getRockets().get(0));
-        assertEquals(rocket1, mission.getRockets().get(1));
-        assertEquals(RocketStatus.IN_SPACE, mission.getRockets().get(0).getStatus());
-        assertEquals(RocketStatus.IN_REPAIR, mission.getRockets().get(1).getStatus());
-        assertEquals(MissionStatus.PENDING, mission.getStatus());
+        assertEquals(rocket2, mission.getRockets().get(1));
+
+        verify(missionService, times(2)).changeMissionStatus(mission.getId(), MissionStatus.IN_PROGRESS);
+
+        verify(rocketService).changeRocketStatus(rocket1.getId(), RocketStatus.IN_SPACE);
+        verify(rocketService).changeRocketStatus(rocket2.getId(), RocketStatus.IN_SPACE);
+
     }
 
     @Test
@@ -84,7 +90,6 @@ public class MissionPlanningServiceTest {
         Rocket rocket = new Rocket("testRocket");
 
         missionPlanningService.assignRocketsToMission(mission1, rocket);
-        missionPlanningService.assignRocketsToMission(mission2, rocket);
 
         RocketException exception = assertThrows(RocketException.class, () -> {
             missionPlanningService.assignRocketsToMission(mission2, rocket);
@@ -129,7 +134,7 @@ public class MissionPlanningServiceTest {
         mission6.setStatus(MissionStatus.ENDED);
 
         String testMissionSummary = """
-                • testMission2 – In progress – Dragons: 3
+                • testMission2 – In Progress – Dragons: 3
                 o testRocket2Mission1 – In space
                 o testRocket2Mission2 – In space
                 o testRocket2Mission3 – In space
@@ -139,16 +144,20 @@ public class MissionPlanningServiceTest {
                 • testMission4 – Pending – Dragons: 2
                 o testRocket1Mission4 – In space
                 o testRocket2Mission4 – In repair
-                • testMission3 – In progress – Dragons: 1
+                • testMission3 – In Progress – Dragons: 1
                 o testRocket1Mission3 – In space
                 • testMission5 – Scheduled – Dragons: 0
-                • testMission6 – Ended – Dragons: 0""";
+                • testMission6 – Ended – Dragons: 0
+                """;
 
 
         missionPlanningService.assignRocketsToMission(mission4, rocket1Mission4, rocket2Mission4);
         missionPlanningService.assignRocketsToMission(mission3, rocket1Mission3);
         missionPlanningService.assignRocketsToMission(mission1, rocket1Mission1, rocket2Mission1);
         missionPlanningService.assignRocketsToMission(mission2, rocket1Mission2, rocket2Mission2, rocket3Mission2);
+
+        rocket1Mission3.setStatus(RocketStatus.IN_SPACE);
+        mission3.setStatus(MissionStatus.IN_PROGRESS);
 
         when(missionService.getAllMissions()).thenReturn(List.of(mission1, mission2, mission3, mission4, mission5, mission6));
         String missionSummary = missionPlanningService.getMissionsSummary();

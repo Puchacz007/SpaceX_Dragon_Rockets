@@ -3,11 +3,12 @@ package six.rockets.services;
 import six.rockets.enums.RocketStatus;
 import six.rockets.models.Rocket;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface RocketService {
-    UUID addRockets(Rocket... rockets);
+    void addRockets(Rocket... newRockets);
     void changeRocketStatus(UUID rocketId, RocketStatus status);
     List<Rocket> getAllRockets();
-    Rocket getRocketById(UUID rocketId);
+    Optional<Rocket> getRocketById(UUID rocketId);
 }

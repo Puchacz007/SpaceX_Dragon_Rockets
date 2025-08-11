@@ -11,6 +11,7 @@ import six.rockets.enums.RocketStatus;
 public class Rocket extends EntityId {
     private String name;
     private RocketStatus status;
+    @EqualsAndHashCode.Exclude
     private Mission mission;
 
     public Rocket(String name) {
