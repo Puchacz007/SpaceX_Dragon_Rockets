@@ -21,7 +21,7 @@ public class MissionPlanningServiceImpl implements MissionPlanningService {
 
     @Override
     public void assignRocketsToMission(Mission mission, Rocket... rockets) {
-        for(Rocket rocket : rockets) {
+        for (Rocket rocket : rockets) {
             if (rocket.getMission() == null) {
                 missionService.changeMissionStatus(mission.getId(), MissionStatus.IN_PROGRESS);
                 rocket.setMission(mission);
@@ -37,14 +37,14 @@ public class MissionPlanningServiceImpl implements MissionPlanningService {
     public String getMissionsSummary() {
         List<Mission> missions = missionService.getAllMissions();
         missions = missions.stream().sorted(Comparator.comparing((Mission mission) -> mission.getRockets().size()).reversed()
-                .thenComparing(Mission::getName))
+                        .thenComparing(Mission::getName))
                 .toList();
         return formatSummaryResponse(missions);
     }
 
     private String formatSummaryResponse(List<Mission> missions) {
         StringBuilder summary = new StringBuilder();
-        for(Mission mission : missions) {
+        for (Mission mission : missions) {
             summary.append(createSingleMissionSummary(mission))
                     .append("\n");
         }
@@ -54,8 +54,8 @@ public class MissionPlanningServiceImpl implements MissionPlanningService {
     private String createSingleMissionSummary(Mission mission) {
         StringBuilder summary = new StringBuilder(
                 "• " + mission.getName() +
-                " – " + mission.getStatus().getText() +
-                " – " + "Dragons: " + mission.getRockets().size());
+                        " – " + mission.getStatus().getText() +
+                        " – " + "Dragons: " + mission.getRockets().size());
 
         for (Rocket rocket : mission.getRockets()) {
             summary.append("\no ")

@@ -37,7 +37,7 @@ public class MissionServiceTest {
         Assertions.assertEquals(1, missions.size());
         Assertions.assertEquals(mission.getId(), missions.get(0).getId());
         Assertions.assertEquals(MissionStatus.SCHEDULED, missions.get(0).getStatus());
-        Assertions.assertEquals(0,missions.get(0).getRockets().size());
+        Assertions.assertEquals(0, missions.get(0).getRockets().size());
         Assertions.assertEquals(mission.getName(), missions.get(0).getName());
         Assertions.assertEquals(mission, missions.get(0));
     }
@@ -54,10 +54,31 @@ public class MissionServiceTest {
         Assertions.assertEquals(1, missions.size());
         Assertions.assertEquals(mission.getId(), missions.get(0).getId());
         Assertions.assertEquals(MissionStatus.IN_PROGRESS, missions.get(0).getStatus());
-        Assertions.assertEquals(1,missions.get(0).getRockets().size());
+        Assertions.assertEquals(1, missions.get(0).getRockets().size());
         Assertions.assertEquals(mission.getName(), missions.get(0).getName());
         Assertions.assertEquals(mission, missions.get(0));
         Assertions.assertEquals(1, mission.getRockets().size());
+    }
+
+    @Test
+    public void changeMissionStatusToPendingTest() {
+        Mission mission = new Mission("testMission");
+        mission.getRockets().add(new Rocket("testRocket1"));
+        Rocket rocketInRepair = new Rocket("testRocket2");
+        rocketInRepair.setStatus(RocketStatus.IN_REPAIR);
+        mission.getRockets().add(rocketInRepair);
+
+        missionService.addMissions(mission);
+        missionService.changeMissionStatus(mission.getId(), MissionStatus.IN_PROGRESS);
+        List<Mission> missions = missionService.getAllMissions();
+
+        Assertions.assertEquals(1, missions.size());
+        Assertions.assertEquals(mission.getId(), missions.get(0).getId());
+        Assertions.assertEquals(MissionStatus.PENDING, missions.get(0).getStatus());
+        Assertions.assertEquals(2, mission.getRockets().size());
+        Assertions.assertEquals(2, missions.get(0).getRockets().size());
+        Assertions.assertEquals(mission.getName(), missions.get(0).getName());
+        Assertions.assertEquals(mission, missions.get(0));
     }
 
     @Test
@@ -72,7 +93,7 @@ public class MissionServiceTest {
         Assertions.assertEquals(1, missions.size());
         Assertions.assertEquals(mission.getId(), missions.get(0).getId());
         Assertions.assertEquals(MissionStatus.ENDED, missions.get(0).getStatus());
-        Assertions.assertEquals(0,missions.get(0).getRockets().size());
+        Assertions.assertEquals(0, missions.get(0).getRockets().size());
         Assertions.assertEquals(mission.getName(), missions.get(0).getName());
         Assertions.assertEquals(mission, missions.get(0));
         Assertions.assertEquals(0, mission.getRockets().size());

@@ -1,6 +1,7 @@
 package six.rockets.models;
 
 import lombok.Getter;
+
 import java.util.UUID;
 
 @Getter

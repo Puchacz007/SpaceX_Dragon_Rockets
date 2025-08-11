@@ -29,7 +29,6 @@ public class MissionServiceImpl implements MissionService {
                         rocket.setStatus(RocketStatus.ON_GROUND);
                     }
                     rocket.setMission(null);
-
                 });
                 mission.getRockets().clear();
             } else if (MissionStatus.IN_PROGRESS == status && isMissionPending(mission)) {
