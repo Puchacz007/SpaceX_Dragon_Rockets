@@ -1,5 +1,6 @@
 package six.rockets.models;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import six.rockets.enums.MissionStatus;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = true)
 public class Mission extends EntityId {
     private String name;
     private MissionStatus status;

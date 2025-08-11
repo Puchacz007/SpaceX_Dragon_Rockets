@@ -13,7 +13,7 @@ public class MissionServiceImpl implements MissionService {
     List<Mission> missions = new ArrayList<>();
 
     @Override
-    public UUID addMission() {
+    public UUID addMissions(Mission... missions) {
         return null;
     }
 
@@ -23,7 +23,12 @@ public class MissionServiceImpl implements MissionService {
     }
 
     @Override
-    public void getMissionsSummary() {
+    public List<Mission> getAllMissions() {
+        return List.of();
+    }
 
+    @Override
+    public Mission getMissionById(UUID missionId) {
+        return null;
     }
 }

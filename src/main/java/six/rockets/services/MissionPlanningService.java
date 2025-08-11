@@ -1,7 +1,9 @@
 package six.rockets.services;
 
-import java.util.UUID;
+import six.rockets.models.Mission;
+import six.rockets.models.Rocket;
 
 public interface MissionPlanningService {
-    void assignRocketsToMission(UUID missionId, UUID... rocketIds);
+    void assignRocketsToMission(Mission mission, Rocket... rockets);
+    String getMissionsSummary();
 }
